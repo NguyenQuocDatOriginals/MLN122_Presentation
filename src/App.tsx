@@ -7,8 +7,8 @@ interface FormData {
   materialCost: string;
   depreciation: string;
   otherCosts: string;
-  reinvestmentRate: string; // Tỷ lệ tái đầu tư (%)
-  returnRate: string; // Tỷ lệ sinh lời (%)
+  reinvestmentRate: string;
+  returnRate: string;
 }
 
 const App: React.FC = () => {
@@ -25,6 +25,7 @@ const App: React.FC = () => {
   const [surplusValue, setSurplusValue] = useState<number | null>(null);
   const [futureProfit, setFutureProfit] = useState<number | null>(null);
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái để điều khiển pop-up
 
   // Hàm định dạng số với dấu chấm ngăn cách hàng nghìn
   const formatNumber = (value: string): string => {
@@ -45,7 +46,6 @@ const App: React.FC = () => {
     const rawValue = value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
     setFormData((prev) => ({ ...prev, [name]: rawValue }));
 
-    // Kiểm tra bội số của 1000 cho các trường chi phí và doanh thu
     if (['revenue', 'laborCost', 'materialCost', 'depreciation', 'otherCosts'].includes(name)) {
       if (rawValue && !isMultipleOf1000(rawValue)) {
         setErrors((prev) => ({ ...prev, [name]: 'Số này phải là bội của 1000' }));
@@ -76,19 +76,21 @@ const App: React.FC = () => {
       return;
     }
 
-    // Tính giá trị thặng dư (doanh thu - chi phí lương)
     const surplus = rev - labor;
     setSurplusValue(surplus);
 
-    // Tính lợi nhuận hiện tại
     const totalCost = labor + material + dep + other;
     const calculatedProfit = rev - totalCost;
     setProfit(calculatedProfit);
 
-    // Tính lợi nhuận tương lai từ tái đầu tư
     const reinvestment = calculatedProfit * reinvestRate;
     const futureProfitValue = reinvestment * retRate;
     setFutureProfit(futureProfitValue);
+  };
+
+  // Hàm mở/đóng pop-up
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
   return (
@@ -182,9 +184,14 @@ const App: React.FC = () => {
               placeholder="Nhập tỷ lệ sinh lời (ví dụ: 10 cho 10%)"
             />
           </div>
-          <button className="calculate-button" onClick={calculateProfit}>
-            Tính toán
-          </button>
+          <div className="button-group">
+            <button className="calculate-button" onClick={calculateProfit}>
+              Tính toán
+            </button>
+            <button className="explain-button" onClick={toggleModal}>
+              Giải thích công thức
+            </button>
+          </div>
         </section>
         {profit !== null && surplusValue !== null && futureProfit !== null && (
           <section className="result-section">
@@ -210,6 +217,65 @@ const App: React.FC = () => {
       <footer className="app-footer">
         <p>Copyright © 2025 Nguyễn Quốc Đạt Originals</p>
       </footer>
+
+      {/* Pop-up giải thích công thức */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Giải thích công thức và đại lượng</h2>
+            <p>Dưới đây là giải thích chi tiết về các đại lượng và công thức được sử dụng trong ứng dụng này:</p>
+            <ul>
+              <li>
+                <strong>Doanh thu (Revenue):</strong> Tổng số tiền thu được từ việc bán hàng hóa hoặc dịch vụ (đơn vị: VNĐ).
+              </li>
+              <li>
+                <strong>Chi phí lương công nhân (Labor Cost):</strong> Tổng chi phí trả cho lao động trực tiếp tham gia sản xuất (đơn vị: VNĐ).
+              </li>
+              <li>
+                <strong>Chi phí nguyên vật liệu (Material Cost):</strong> Chi phí mua nguyên liệu để sản xuất sản phẩm (đơn vị: VNĐ).
+              </li>
+              <li>
+                <strong>Chi phí khấu hao máy móc (Depreciation):</strong> Giá trị hao mòn của máy móc, thiết bị trong quá trình sản xuất (đơn vị: VNĐ).
+              </li>
+              <li>
+                <strong>Chi phí khác (Other Costs):</strong> Các chi phí phát sinh khác không thuộc các hạng mục trên (đơn vị: VNĐ).
+              </li>
+              <li>
+                <strong>Tỷ lệ tái đầu tư (Reinvestment Rate):</strong> Phần trăm lợi nhuận hiện tại được sử dụng để tái đầu tư (đơn vị: %).
+              </li>
+              <li>
+                <strong>Tỷ lệ sinh lời (Return Rate):</strong> Tỷ lệ lợi nhuận thu được từ khoản tái đầu tư (đơn vị: %).
+              </li>
+            </ul>
+            <h3>Công thức tính toán:</h3>
+            <ol>
+              <li>
+                <strong>Giá trị thặng dư (Surplus Value):</strong> <br />
+                <code>Giá trị thặng dư = Doanh thu - Chi phí lương công nhân</code>
+              </li>
+              <li>
+                <strong>Tổng chi phí (Total Cost):</strong> <br />
+                <code>Tổng chi phí = Chi phí lương + Chi phí nguyên vật liệu + Chi phí khấu hao + Chi phí khác</code>
+              </li>
+              <li>
+                <strong>Lợi nhuận hiện tại (Profit):</strong> <br />
+                <code>Lợi nhuận hiện tại = Doanh thu - Tổng chi phí</code>
+              </li>
+              <li>
+                <strong>Khoản tái đầu tư (Reinvestment):</strong> <br />
+                <code>Khoản tái đầu tư = Lợi nhuận hiện tại × Tỷ lệ tái đầu tư</code>
+              </li>
+              <li>
+                <strong>Lợi nhuận tương lai (Future Profit):</strong> <br />
+                <code>Lợi nhuận tương lai = Khoản tái đầu tư × Tỷ lệ sinh lời</code>
+              </li>
+            </ol>
+            <button className="close-button" onClick={toggleModal}>
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -23,6 +23,7 @@ body {
   border-radius: 15px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  position: relative; /* Để pop-up hiển thị đúng trong container */
 }
 
 .app-header {
@@ -91,8 +92,13 @@ body {
   margin-top: 5px;
 }
 
+.button-group {
+  display: flex;
+  gap: 10px; /* Khoảng cách giữa các nút */
+}
+
 .calculate-button {
-  width: 100%;
+  flex: 1;
   padding: 14px;
   background: linear-gradient(90deg, #0288d1, #0277bd);
   color: white;
@@ -106,6 +112,24 @@ body {
 
 .calculate-button:hover {
   background: linear-gradient(90deg, #0277bd, #026aa7);
+  transform: translateY(-2px);
+}
+
+.explain-button {
+  flex: 1;
+  padding: 14px;
+  background: linear-gradient(90deg, #4caf50, #43a047);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.explain-button:hover {
+  background: linear-gradient(90deg, #43a047, #388e3c);
   transform: translateY(-2px);
 }
 
@@ -164,6 +188,97 @@ body {
   border-top: 1px solid #e0e0e0;
 }
 
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.modal-content h2 {
+  font-size: 1.5rem;
+  color: #01579b;
+  margin-bottom: 15px;
+}
+
+.modal-content p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.modal-content ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.modal-content ul li {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.modal-content h3 {
+  font-size: 1.2rem;
+  color: #01579b;
+  margin-bottom: 10px;
+}
+
+.modal-content ol {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.modal-content ol li {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.modal-content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.close-button {
+  width: 100%;
+  padding: 12px;
+  background: #d32f2f;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.close-button:hover {
+  background: #b71c1c;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
   .app-container {
@@ -188,7 +303,13 @@ body {
     padding: 10px;
   }
 
-  .calculate-button {
+  .button-group {
+    flex-direction: column; /* Xếp nút theo chiều dọc trên màn hình nhỏ */
+    gap: 10px;
+  }
+
+  .calculate-button,
+  .explain-button {
     font-size: 1rem;
     padding: 12px;
   }
@@ -200,5 +321,24 @@ body {
 
   .analysis {
     font-size: 0.9rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .modal-content p,
+  .modal-content ul li,
+  .modal-content ol li {
+    font-size: 0.9rem;
+  }
+
+  .modal-content h3 {
+    font-size: 1.1rem;
   }
 }
